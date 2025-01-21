@@ -26,11 +26,24 @@ async function main() {
     });
 
     server.addService(questionProto.QuestionService.service, {
-        getQuestions: async (_, callback) => {
+        getQuestions: async (call, callback) => {
             console.log("getQuestions called");
             try {
-                const questions = await Question.find();
-                callback(null, { questions });
+                const { page = 1, limit = 5, search = "" } = call.request;
+                const skip = (page - 1) * limit;
+                const questions = await Question.find(
+                    { title: new RegExp(search, 'i') }
+                ).skip(skip)
+                    .limit(limit);
+                const total = await Question.countDocuments({
+                    title: new RegExp(search, 'i')
+                });
+                callback(null, {
+                    questions,
+                    total,
+                    page,
+                    limit
+                });
             } catch (err) {
                 console.error("Error in getQuestions:", err);
                 callback(err, null);

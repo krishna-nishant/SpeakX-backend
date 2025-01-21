@@ -21,24 +21,24 @@ async function main() {
 
     const questionProto = grpc.loadPackageDefinition(packageDefinition);
     const server = new grpc.Server({
-        'grpc.max_receive_message_length': 20000000, // Increase receive message limit to 10MB
-        'grpc.max_send_message_length': 20000000    // Increase send message limit to 10MB
+        'grpc.max_receive_message_length': 20000000,
+        'grpc.max_send_message_length': 20000000
     });
 
     server.addService(questionProto.QuestionService.service, {
         getQuestions: async (_, callback) => {
-            console.log("getQuestions called"); // Log if this function is called
+            console.log("getQuestions called");
             try {
                 const questions = await Question.find();
                 callback(null, { questions });
             } catch (err) {
-                console.error("Error in getQuestions:", err); // Log any error
+                console.error("Error in getQuestions:", err);
                 callback(err, null);
             }
         },
     });
 
-    server.bindAsync(`127.0.0.1:${process.env.GRPC_PORT}`, grpc.ServerCredentials.createInsecure(), (err, bindPort) => {
+    server.bindAsync(`${process.env.GRPC_PORT}`, grpc.ServerCredentials.createInsecure(), (err, bindPort) => {
         if (err) {
             console.error(`Server failed to bind: ${err.message}`);
             return;

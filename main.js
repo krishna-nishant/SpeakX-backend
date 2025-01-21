@@ -23,5 +23,5 @@ app.get('/', (req, res) => {
 });
 
 app.listen(process.env.PORT, () => {
-    console.log("Express server is running on port 5555");
+    console.log(`Express server is running on port ${process.env.PORT}`);
 });

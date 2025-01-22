@@ -1,26 +1,24 @@
 syntax = "proto3";
 
-service QuestionService {
-    rpc getQuestions(QuestionRequest) returns (QuestionResponse);
+message GetQuestionsRequest {
+  int32 page = 1;
+  int32 limit = 2;
+  string search = 3;
+  repeated string types = 4;
 }
-
-message QuestionRequest {
-    int32 page = 1;
-    int32 limit = 2;
-    string search = 3;
-}
-
-message Empty {}
 
 message Question {
-    string id = 1;
-    string type = 2;
-    string title = 3;
+  string title = 1;
+  string type = 2;
 }
 
-message QuestionResponse {
-    repeated Question questions = 1;
-    int32 total = 2;
-    int32 page = 3;
-    int32 limit = 4;
+message GetQuestionsResponse {
+  repeated Question questions = 1;
+  int32 total = 2;
+  int32 page = 3;
+  int32 limit = 4;
+}
+
+service QuestionService {
+  rpc GetQuestions(GetQuestionsRequest) returns (GetQuestionsResponse) {}
 }

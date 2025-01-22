@@ -25,19 +25,28 @@ async function main() {
         'grpc.max_send_message_length': 20000000
     });
 
+    
     server.addService(questionProto.QuestionService.service, {
         getQuestions: async (call, callback) => {
             console.log("getQuestions called");
             try {
-                const { page = 1, limit = 5, search = "" } = call.request;
+                const { page = 1, limit = 5, search = "", types = [] } = call.request;
                 const skip = (page - 1) * limit;
-                const questions = await Question.find(
-                    { title: new RegExp(search, 'i') }
-                ).skip(skip)
-                    .limit(limit);
-                const total = await Question.countDocuments({
+            
+                const query = {
                     title: new RegExp(search, 'i')
-                });
+                };
+                
+                if (types.length > 0) {
+                    query.type = { $in: types };
+                }
+                
+                const questions = await Question.find(query)
+                    .skip(skip)
+                    .limit(limit);
+                
+                const total = await Question.countDocuments(query);
+                                
                 callback(null, {
                     questions,
                     total,

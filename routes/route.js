@@ -7,7 +7,9 @@ router.get('/questions', async (req, res) => {
     const page = parseInt(req.query.page) || 1;
     const limit = parseInt(req.query.limit) || 5;
     const search = req.query.search || "";
-    client.getQuestions({ page, limit, search }, (err, data) => {
+    const types = req.query.types ? req.query.types.split(',') : [];
+    
+    client.getQuestions({ page, limit, search, types }, (err, data) => {
         if (err) {
             console.error(err);
             return res.status(500).send({
